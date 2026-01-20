@@ -1,0 +1,121 @@
+/**
+ * @fileoverview Prisma Database Schema
+ * 
+ * This schema defines the database structure for Fraudlr using PostgreSQL.
+ * Prisma is an ORM (Object-Relational Mapping) that makes database operations
+ * type-safe and easier to work with in TypeScript.
+ * 
+ * Database Models:
+ * - User: Stores user authentication and profile data
+ * - Case: Represents fraud detection cases created by users
+ * - Integration: External API/SQL integrations for data ingestion
+ * - Subscription: User subscription tier information
+ */
+
+// Configure the Prisma client generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Database connection configuration
+// Uses PostgreSQL as specified in requirements
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile management
+// Stores credentials and links to related data like cases and subscriptions
+model User {
+  id            String    @id @default(cuid())  // Unique identifier using CUID
+  email         String    @unique               // Email must be unique for login
+  password      String                          // Hashed password (never store plain text!)
+  name          String?                         // Optional display name
+  createdAt     DateTime  @default(now())       // Account creation timestamp
+  updatedAt     DateTime  @updatedAt            // Auto-updated on changes
+  
+  // Relationships - a user can have multiple cases and one subscription
+  cases         Case[]
+  subscription  Subscription?
+  integrations  Integration[]
+  
+  @@map("users")  // Maps to "users" table in the database
+}
+
+// Case model for fraud detection cases
+// Each case represents an analysis session with uploaded data
+model Case {
+  id          String    @id @default(cuid())
+  name        String                            // User-defined case name
+  description String?                           // Optional case description
+  status      CaseStatus @default(PENDING)      // Current analysis status
+  fileUrl     String?                           // URL to uploaded CSV file
+  results     Json?                             // JSON storage for analysis results
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relationship to user - every case belongs to exactly one user
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("cases")
+}
+
+// Enum for case status tracking
+// Enums provide type safety and prevent invalid status values
+enum CaseStatus {
+  PENDING     // Case created but not yet processed
+  PROCESSING  // Analysis in progress
+  COMPLETED   // Analysis finished successfully
+  FAILED      // Analysis encountered an error
+}
+
+// Integration model for external data connections
+// Allows users to connect API endpoints or SQL databases
+model Integration {
+  id          String          @id @default(cuid())
+  name        String                              // User-friendly integration name
+  type        IntegrationType                     // API or SQL type
+  config      Json                                // Encrypted connection details
+  isActive    Boolean         @default(true)      // Enable/disable toggle
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  // Relationship to user
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("integrations")
+}
+
+// Enum for integration types
+enum IntegrationType {
+  API   // REST API endpoint
+  SQL   // SQL database connection
+}
+
+// Subscription model for tier management
+// Controls feature access based on Free, Standard, or Pro tiers
+model Subscription {
+  id          String           @id @default(cuid())
+  tier        SubscriptionTier @default(FREE)    // Current subscription tier
+  startDate   DateTime         @default(now())   // Subscription start
+  endDate     DateTime?                          // Null for free tier, set for paid
+  isActive    Boolean          @default(true)    // Active subscription flag
+  
+  // Track usage for tier limits
+  csvUploadsThisMonth Int      @default(0)       // Counter for CSV uploads
+  
+  // Relationship to user - one subscription per user
+  userId      String           @unique
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("subscriptions")
+}
+
+// Enum for subscription tiers with different feature sets
+enum SubscriptionTier {
+  FREE      // 2 CSV uploads/month, basic features
+  STANDARD  // 10 CSV uploads/month, advanced features
+  PRO       // Unlimited uploads, all features
+}

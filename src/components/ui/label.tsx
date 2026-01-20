@@ -1,0 +1,45 @@
+/**
+ * @fileoverview Label Component
+ * 
+ * An accessible label component using Radix UI primitives.
+ * Associates form labels with their inputs for accessibility.
+ */
+
+"use client";
+
+import * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+/**
+ * Label style variants
+ * Currently has a single default style but can be extended for different contexts
+ */
+const labelVariants = cva(
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+);
+
+/**
+ * Label Component
+ * 
+ * An accessible label that associates with form controls.
+ * 
+ * @example
+ * <Label htmlFor="email">Email Address</Label>
+ * <Input id="email" type="email" />
+ */
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+    VariantProps<typeof labelVariants>
+>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root
+    ref={ref}
+    className={cn(labelVariants(), className)}
+    {...props}
+  />
+));
+Label.displayName = LabelPrimitive.Root.displayName;
+
+export { Label };
