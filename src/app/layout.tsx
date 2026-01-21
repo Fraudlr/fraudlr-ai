@@ -3,7 +3,7 @@
  * 
  * This is the root layout for the entire Next.js application.
  * It wraps all pages and provides:
- * - Font loading (Geist Sans and Mono)
+ * - Font loading (Inter font from Google Fonts)
  * - Theme provider for dark/light mode switching
  * - Global metadata for SEO
  * 
@@ -12,11 +12,16 @@
  */
 
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+
+// Configure Inter font with Latin subset
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 /**
  * Metadata Configuration
@@ -76,10 +81,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Set the language and apply the Geist font CSS variables
+    // Set the language and apply the Inter font CSS variable
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={inter.variable}
       suppressHydrationWarning // Required for next-themes to prevent hydration mismatch
     >
       <body className="min-h-screen bg-background font-sans antialiased">
