@@ -1,16 +1,14 @@
-/**
- * @fileoverview Prisma Database Schema
- * 
- * This schema defines the database structure for Fraudlr using PostgreSQL.
- * Prisma is an ORM (Object-Relational Mapping) that makes database operations
- * type-safe and easier to work with in TypeScript.
- * 
- * Database Models:
- * - User: Stores user authentication and profile data
- * - Case: Represents fraud detection cases created by users
- * - Integration: External API/SQL integrations for data ingestion
- * - Subscription: User subscription tier information
- */
+// Prisma Database Schema
+//
+// This schema defines the database structure for Fraudlr using PostgreSQL.
+// Prisma is an ORM (Object-Relational Mapping) that makes database operations
+// type-safe and easier to work with in TypeScript.
+//
+// Database Models:
+// - User: Stores user authentication and profile data
+// - Case: Represents fraud detection cases created by users
+// - Integration: External API/SQL integrations for data ingestion
+// - Subscription: User subscription tier information
 
 // Configure the Prisma client generator
 generator client {
