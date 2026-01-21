@@ -21,10 +21,9 @@
 @tailwind utilities;
 
 /**
- * Import Geist font from the local font files
- * Geist is a modern, clean font designed for readability
+ * Font is loaded via Next.js font optimization in layout.tsx
+ * Inter font is configured with --font-sans CSS variable
  */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono&display=swap');
 
 /* Base layer styles - applied to all elements */
 @layer base {
