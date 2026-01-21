@@ -418,6 +418,41 @@ npx prisma studio
 npx prisma migrate reset
 ```
 
+### Create and commit Prisma migrations (local dev)
+
+If you haven't generated migrations yet, run the following on your development machine (not the production server). The repository includes helper scripts in `scripts/` for convenience.
+
+Linux/macOS:
+
+```bash
+./scripts/create-migration.sh init
+```
+
+Windows (PowerShell):
+
+```powershell
+.
+\scripts\create-migration.ps1 -Name init
+```
+
+Alternatively, run the commands manually:
+
+```bash
+npx prisma migrate dev --name init
+git add prisma/migrations
+git commit -m "prisma: add initial migrations"
+git push origin main
+```
+
+After pushing migrations, on the server run:
+
+```bash
+cd /var/www/fraudlr-ai
+git pull origin main
+npx prisma migrate deploy
+```
+
+
 ### PM2 (Production)
 
 ```bash
